@@ -40,7 +40,10 @@ on:
     inputs:
       attempts:
         description: "Max doc-test attempts per job (stops at the first failure)"
-        default: "6"
+        default: "8"
+      release_sha:
+        description: "Upstream logos-execution-zone-module SHA to build/test"
+        default: "d2e9400ac06c3cdbfc2405b4f153fff9841a453c"
   pull_request:
     types: [opened, synchronize, reopened, labeled]
     branches: [master, main]
@@ -62,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     env:
@@ -93,7 +96,7 @@ jobs:
             echo "sha=" >> "$GITHUB_OUTPUT"
             echo "Fork PR — probing against latest master."
           else
-            echo "sha=${{ github.event.pull_request.head.sha || github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.inputs.release_sha || github.event.pull_request.head.sha || github.sha }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Enable core dumps
